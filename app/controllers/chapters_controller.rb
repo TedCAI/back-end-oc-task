@@ -2,9 +2,9 @@ class ChaptersController < ApplicationController
   before_action :set_chapter        , only: [:show, :edit, :update, :destroy]
 
   def room
-    room_number       = params[:room_number].to_i
-    @active_chapter   = Chapter.active
-    @room             = @active_chapter&.rooms&.find_by(number: room_number)
+    room_id           = params[:room_number].to_i
+    chapter_id        = params[:chapter_id]&.to_i
+    @room             = chapter_id ? Chapter.find_by(id: chapter_id)&.rooms&.find_by(id: room_id) : Chapter.active&.rooms&.find_by(number: room_id)
     @available_rooms  = @room&.available_rooms
   end
 
