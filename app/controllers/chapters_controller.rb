@@ -2,9 +2,9 @@ class ChaptersController < ApplicationController
   before_action :set_chapter        , only: [:show, :edit, :update, :destroy]
 
   def room
-    room_number       = params[:room_number].to_i
-    @active_chapter   = Chapter.active
-    @room             = @active_chapter&.rooms&.find_by(number: room_number)
+    room_id           = params[:room_number].to_i
+    chapter_id        = params[:chapter_id]&.to_i
+    @room             = chapter_id ? Chapter.find_by(id: chapter_id)&.rooms&.find_by(id: room_id) : Chapter.active&.rooms&.find_by(number: room_id)
     @available_rooms  = @room&.available_rooms
   end
 
@@ -33,9 +33,7 @@ class ChaptersController < ApplicationController
   # POST /chapters.json
   def create
     active_chapter = Chapter.active
-    if active_chapter
-      active_chapter.update_column :active, false
-    end
+    active_chapter.update_column :active, false if active_chapter
 
     @chapter = Chapter.new(chapter_params)
 
@@ -44,6 +42,7 @@ class ChaptersController < ApplicationController
         format.html { redirect_to @chapter, notice: 'Chapter was successfully created.' }
         format.json { render :show, status: :created, location: @chapter }
       else
+        active_chapter.update_column :active, true if active_chapter
         format.html { render :new }
         format.json { render json: @chapter.errors, status: :unprocessable_entity }
       end

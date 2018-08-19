@@ -13,7 +13,7 @@
 
 .available_rooms
   -@available_rooms.each do |room|
-    =link_to "/maze/room/#{room.number}" do
+    =link_to "/maze/room/#{room.id}?chapter_id=#{room.chapter_id}" do
       .next_room{ class: "#{room.final ? 'final' : ''}" }
         -if room.final
           %b.next_room_number
