@@ -33,9 +33,7 @@ class ChaptersController < ApplicationController
   # POST /chapters.json
   def create
     active_chapter = Chapter.active
-    if active_chapter
-      active_chapter.update_column :active, false
-    end
+    active_chapter.update_column :active, false if active_chapter
 
     @chapter = Chapter.new(chapter_params)
 
@@ -44,6 +42,7 @@ class ChaptersController < ApplicationController
         format.html { redirect_to @chapter, notice: 'Chapter was successfully created.' }
         format.json { render :show, status: :created, location: @chapter }
       else
+        active_chapter.update_column :active, true if active_chapter
         format.html { render :new }
         format.json { render json: @chapter.errors, status: :unprocessable_entity }
       end
