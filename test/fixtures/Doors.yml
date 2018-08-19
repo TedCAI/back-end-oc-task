@@ -1,0 +1,19 @@
+one:
+  final: false
+  img: nil
+
+two:
+  final: false
+  img: nil
+
+three:
+  final: false
+  img: nil
+
+four:
+  final: false
+  img: nil
+
+five:
+  final: true
+  img: nil

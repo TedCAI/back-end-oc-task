@@ -6,6 +6,7 @@ class Room < ApplicationRecord
   belongs_to :door
 
   has_many :edges, foreign_key: 'room_parent_id'
+  has_many :available_rooms, through: :edges, source: :child_room
 
   validates :door_id, presence: true
   validates :chapter, presence: true
@@ -23,22 +24,18 @@ class Room < ApplicationRecord
   delegate :thumbnail, to: :door, prefix: false, allow_nil: true
 
   def assign_door
-    door  = if self.final
-              Door.where(final: true).first
+    door  = if final
+              Door.find_by(final: true)
             else
               door_id = ( Door.all_ids - used_door_ids ).sample
-              Door.where(id: door_id).try(:first)
+              Door.find_by(id: door_id)
             end
 
     self.door = door
   end
-
+  
   def used_door_ids
-    Room.where(chapter_id: self.chapter_id).pluck(:door_id)
-  end
-
-  def available_rooms
-    Room.where( id: self.edges.pluck(:room_child_id) )
+    chapter.rooms.pluck(:door_id)
   end
 
 end

@@ -4,8 +4,8 @@ class ChaptersController < ApplicationController
   def room
     room_number       = params[:room_number].to_i
     @active_chapter   = Chapter.active
-    @room             = Room.active(@active_chapter).where(number: room_number).first
-    @available_rooms  = @room.available_rooms
+    @room             = @active_chapter&.rooms&.find_by(number: room_number)
+    @available_rooms  = @room&.available_rooms
   end
 
   # GET /chapters

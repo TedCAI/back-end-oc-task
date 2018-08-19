@@ -1,0 +1,4 @@
+one_for_chapter_one:
+  parent_room: one_for_chapter_one (Room)
+  child_room: two_for_chapter_one (Room)
+  chapter: one (Chapter)

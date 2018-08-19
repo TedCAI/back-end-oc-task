@@ -1,10 +1,18 @@
-development:
+default: &default
   adapter: postgresql
   encoding: utf8
   reconnect: true
-  database: oc_test_assignment_dev
   pool: 10
-  username: postgres
-  password:
   host: 127.0.0.1
 
+development:
+  <<: *default
+  database: oc_test_assignment_dev
+  username:
+  password:
+
+test:
+  <<: *default
+  database: oc_test_assignment_test
+  username:
+  password: 
