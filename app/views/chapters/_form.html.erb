@@ -16,17 +16,23 @@
     <%= form.number_field :number, id: :chapter_number, value: "#{chapter.number ? chapter.number : ( @active_chapter.try(:number).to_i + 1) }" %>
   </div>
 
-  <%if params[:action] == 'new'%>
+  <%if chapter.new_record? %>
     <div class="field">
       <%= form.label :rooms_count %>
       <%= form.number_field :rooms_count, id: :chapter_rooms_count %>
     </div>
   <%end%>
 
-  <div class="field">
-    <%= form.label :active %>
-    <%= form.check_box :active, id: :chapter_active %>
-  </div>
+  <% if chapter.new_record? %>
+    <div class="filed">
+      <%= form.hidden_field :active, id: :chapter_active, value: '1' %>
+    </div>
+  <% else %>
+    <div class="field">
+      <%= form.label :active %>
+      <%= form.check_box :active, id: :chapter_active %>
+    </div>
+  <% end %>
 
   <div class="actions">
     <%= form.submit %>
