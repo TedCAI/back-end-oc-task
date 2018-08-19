@@ -5,6 +5,7 @@ class Chapter < ApplicationRecord
   has_many :rooms
   has_many :edges
 
+  validates :number, presence: true, uniqueness: true
   validate :uniq_active
   validate :limit_rooms_count_range
 
