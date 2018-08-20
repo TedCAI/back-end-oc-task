@@ -1,19 +1,24 @@
-one:
+door_one:
+  id: 1
   final: false
-  img: nil
+  img: 1.jpg
 
-two:
+door_two:
+  id: 2
   final: false
-  img: nil
+  img: 2.jpg
 
-three:
+door_three:
+  id: 3
   final: false
-  img: nil
+  img: 3.jpg
 
-four:
+door_four:
+  id: 4
   final: false
-  img: nil
+  img: 4.jpg
 
-five:
+door_five:
+  id: 45
   final: true
-  img: nil
+  img: 45.jpg
