@@ -5,7 +5,11 @@ class ChaptersController < ApplicationController
     room_id           = params[:room_number].to_i
     chapter_id        = params[:chapter_id]&.to_i
     @room             = chapter_id ? Chapter.find_by(id: chapter_id)&.rooms&.find_by(id: room_id) : Chapter.active&.rooms&.find_by(number: room_id)
-    @available_rooms  = @room&.available_rooms
+    if @room
+      @available_rooms  = @room&.available_rooms.includes(:door)
+    else
+      redirect_to chapters_url, notice: 'No active chapter'
+    end
   end
 
   # GET /chapters

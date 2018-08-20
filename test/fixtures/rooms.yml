@@ -1,9 +1,9 @@
 one_for_chapter_one:
   number: 1
-  chapter: one (Chapter)
-  door: one (Door)
+  chapter_id: <%= ActiveRecord::FixtureSet.identify(:chapter_one) %>
+  door_id: 1
 
 two_for_chapter_one:
   number: 2
-  chapter: one (Chapter)
-  door: five (Door)
+  chapter_id: <%= ActiveRecord::FixtureSet.identify(:chapter_one) %>
+  door_id: 45

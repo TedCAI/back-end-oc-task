@@ -1,7 +1,11 @@
 namespace :test_task do
   desc 'Generate init chapter and rooms'
   task :g_init_chapter => :environment do
-    chapter = Chapter.first_or_create number: 1, active: true
+    chapter = Chapter.first
+    if !chapter
+      chapter = Chapter.new number: 1, active: true, rooms_count: '8'
+      chapter.save
+    end
     edges   = {
                 '1' => [ 2, 3, 6 ],
                 '2' => [ 1 ],
@@ -12,11 +16,12 @@ namespace :test_task do
                 '7' => [ 5 ],
                 '8' => []
               }
-
+   
+    chapter.destroy_relative_rooms_and_edges
     # generate rooms
     edges.keys.each do |room_number|
       final = room_number == '8'
-      Room.create number: room_number, final: final
+      chapter.rooms.create number: room_number, final: final
     end
 
     # generate edges
@@ -25,8 +30,8 @@ namespace :test_task do
         room_parent = Room.active(chapter.id).where(number: r_number).first
         room_child  = Room.active(chapter.id).where(number: r_child).first
 
-        Edge.create room_parent_id: room_parent.id,
-                    room_child_id: room_child.id
+        chapter.edges.create room_parent_id: room_parent.id,
+                             room_child_id: room_child.id
       end
     end
 

@@ -11,6 +11,9 @@ class Chapter < ApplicationRecord
 
   before_create :generate_rooms_and_edges
   before_destroy :destroy_relative_rooms_and_edges
+  after_create :ensure_uniq_active
+  
+  scope :active_chapters, -> { where(active: true) }
   
   def self.active
     where(active: true).last
@@ -67,5 +70,10 @@ class Chapter < ApplicationRecord
   def destroy_relative_rooms_and_edges
     self.edges.destroy_all
     self.rooms.destroy_all
+  end
+  
+  def ensure_uniq_active
+    Chapter.active_chapters.update_all(active: false)
+    self.update_column(:active, true)
   end
 end

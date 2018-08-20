@@ -2,8 +2,10 @@ require 'test_helper'
 
 class ChaptersControllerTest < ActionDispatch::IntegrationTest
   def setup
-    @chapter_one = chapters(:one)
-    @chapter_two = chapters(:two)
+    @chapter_one = chapters(:chapter_one)
+    @chapter_two = chapters(:chapter_two)
+    @room_one = rooms(:one_for_chapter_one)
+    @room_two = rooms(:two_for_chapter_one)
   end
   
   test 'should be successful to open chapter list page' do
@@ -18,7 +20,7 @@ class ChaptersControllerTest < ActionDispatch::IntegrationTest
 
   test 'should be successful to create a new chapter' do
     post '/chapters', params: {chapter: {number: '9', rooms_count: '5', active: '1'}}
-    assert :success
+    assert_redirected_to assigns(:chapter)
   end
   
   test 'should be successful to open show page of a chapter' do
@@ -44,7 +46,7 @@ class ChaptersControllerTest < ActionDispatch::IntegrationTest
     assert_equal false, @chapter_one.active
     assert_redirected_to @chapter_one
 
-    put "/chapters/#{@chapter_two.id}", params: {chapter: {number: '1', active: '1'}}
+    put "/chapters/#{@chapter_two.id}", params: {chapter: {number: '2', active: '1'}}
     @chapter_two.reload
     assert :success
     assert_equal true, @chapter_two.active
@@ -55,6 +57,18 @@ class ChaptersControllerTest < ActionDispatch::IntegrationTest
     delete "/chapters/#{@chapter_one.id}"
     assert :success
     assert_redirected_to chapters_url
+  end
+  
+  test 'test maze' do
+    get '/maze/room/1'
+    assert :success
+    assert_equal @room_one, assigns(:room)
+    assert_equal [@room_two], assigns(:available_rooms)
+    
+    get "/maze/room/#{@room_two.id}?chapter_id=#{@chapter_one.id}"
+    assert :success
+    assert_equal @room_two, assigns(:room)
+    assert_empty assigns(:available_rooms)
   end
   
 end

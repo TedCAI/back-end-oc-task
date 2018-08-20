@@ -1,4 +1,4 @@
 one_for_chapter_one:
-  parent_room: one_for_chapter_one (Room)
-  child_room: two_for_chapter_one (Room)
-  chapter: one (Chapter)
+  room_parent_id: <%= ActiveRecord::FixtureSet.identify(:one_for_chapter_one) %>
+  room_child_id:  <%= ActiveRecord::FixtureSet.identify(:two_for_chapter_one) %>
+  chapter_id: <%= ActiveRecord::FixtureSet.identify(:chapter_one) %>
