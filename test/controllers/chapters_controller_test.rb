@@ -18,7 +18,7 @@ class ChaptersControllerTest < ActionDispatch::IntegrationTest
 
   test 'should be successful to create a new chapter' do
     post '/chapters', params: {chapter: {number: '9', rooms_count: '5', active: '1'}}
-    assert :success
+    assert_redirected_to assigns(:chapter)
   end
   
   test 'should be successful to open show page of a chapter' do
@@ -44,7 +44,7 @@ class ChaptersControllerTest < ActionDispatch::IntegrationTest
     assert_equal false, @chapter_one.active
     assert_redirected_to @chapter_one
 
-    put "/chapters/#{@chapter_two.id}", params: {chapter: {number: '1', active: '1'}}
+    put "/chapters/#{@chapter_two.id}", params: {chapter: {number: '2', active: '1'}}
     @chapter_two.reload
     assert :success
     assert_equal true, @chapter_two.active
