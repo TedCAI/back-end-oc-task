@@ -8,7 +8,10 @@ class ChaptersController < ApplicationController
     @room             = chapter_id ? Chapter.find_by(id: chapter_id)&.rooms&.find_by(id: room_id) : Chapter.active&.rooms&.find_by(number: room_id)
     if @room
       @available_rooms  = @room&.available_rooms.includes(:door)
-      UserAction.create(user_id: current_user.id, room_id: @room.id, chapter_id: chapter_id || Chapter.active.id)
+      _chapter_id = chapter_id || Chapter.active.id
+      host = Rails.env.development? ? 'http://0.0.0.0:3000' : request.host
+      UserAction.create(user_id: current_user.id, room_id: @room.id, chapter_id: _chapter_id)
+      SendMsgJob.perform_later("#{host}/maze/room/#{@room.id}?chapter_id=#{_chapter_id}")
     else
       redirect_to chapters_url, notice: 'No active chapter'
     end
