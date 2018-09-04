@@ -1,5 +1,6 @@
 class ChaptersController < ApplicationController
   before_action :set_chapter        , only: [:show, :edit, :update, :destroy]
+  before_action :authenticate_user!, only: :room
 
   def room
     room_id           = params[:room_number].to_i
@@ -7,6 +8,7 @@ class ChaptersController < ApplicationController
     @room             = chapter_id ? Chapter.find_by(id: chapter_id)&.rooms&.find_by(id: room_id) : Chapter.active&.rooms&.find_by(number: room_id)
     if @room
       @available_rooms  = @room&.available_rooms.includes(:door)
+      UserAction.create(user_id: current_user.id, room_id: @room.id, chapter_id: chapter_id || Chapter.active.id)
     else
       redirect_to chapters_url, notice: 'No active chapter'
     end
