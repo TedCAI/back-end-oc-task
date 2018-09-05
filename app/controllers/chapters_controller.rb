@@ -15,17 +15,16 @@ class ChaptersController < ApplicationController
     @room             = chapter_id ? Chapter.find_by(id: chapter_id)&.rooms&.find_by(id: room_id) : Chapter.active&.rooms&.find_by(number: room_id)
     if @room
       current_user.update(team_id: team.id)
-      _chapter_id = chapter_id || Chapter.active.id
+      _chapter_id = chapter_id #|| Chapter.active.id
       last_user_action = UserAction.last
-      if (room_id == 1 && !chapter_id && team.users.where.not(id: current_user.id).map(&:id).include?(last_user_action.user_id))
-        @room = Room.find_by(id: last_user_action.room_id)
+      if (room_id == 1 && !chapter_id && team.users.where.not(id: current_user.id).map(&:id).include?(last_user_action&.user_id))
+        @room = Room.find_by(id: last_user_action&.room_id)
       end
       
-      unless last_user_action.chapter_id == _chapter_id && last_user_action.room_id == room_id
-        if (!chapter_id && team.user_ids.include?(last_user_action.user_id))
-          # if (room_id = 1 && !chapter_id && team.user_ids.include?(last_user_action.user_id))
-          room = Room.find_by(id: last_user_action.room_id)
-          @room = room unless room.final
+      unless last_user_action&.chapter_id == _chapter_id && last_user_action&.room_id == room_id
+        if (!chapter_id && team.user_ids.include?(last_user_action&.user_id))
+          room = Room.find_by(id: last_user_action&.room_id)
+          @room = room unless room&.final
         end
         UserAction.create(user_id: current_user.id, room_id: @room.id, chapter_id: _chapter_id)
         host = Rails.env.development? ? 'http://0.0.0.0:3000' : request.host

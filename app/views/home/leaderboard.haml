@@ -1,0 +1,14 @@
+%h1 Leaderboard
+
+%table
+  %thead
+    %tr
+      %th Chapter
+      %th Room count
+      %th Step count
+  %tbody
+    - @infos.each do |info|
+      %tr
+        %td #{info[:chapter_id]}
+        %td #{info[:room_count]}
+        %td #{info[:steps_count]}

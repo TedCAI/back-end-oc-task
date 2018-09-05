@@ -4,6 +4,7 @@ class Chapter < ApplicationRecord
 
   has_many :rooms
   has_many :edges
+  has_many :user_actions, dependent: :nullify
 
   validates :number, presence: true, uniqueness: true
   validate :uniq_active
