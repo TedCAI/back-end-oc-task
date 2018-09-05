@@ -1,17 +1,38 @@
 class ChaptersController < ApplicationController
   before_action :set_chapter        , only: [:show, :edit, :update, :destroy]
   before_action :authenticate_user!, only: :room
+  skip_before_action :disconnect, only: :room
 
   def room
     room_id           = params[:room_number].to_i
     chapter_id        = params[:chapter_id]&.to_i
+    
+    team = Team.find_or_create_by(name: 'maze')
+    if team.users.where.not(id: current_user.id).count >= 3
+      flash[:notice] = 'only up to 3 players in a team'
+      redirect_to root_path
+    end
     @room             = chapter_id ? Chapter.find_by(id: chapter_id)&.rooms&.find_by(id: room_id) : Chapter.active&.rooms&.find_by(number: room_id)
     if @room
-      @available_rooms  = @room&.available_rooms.includes(:door)
+      current_user.update(team_id: team.id)
       _chapter_id = chapter_id || Chapter.active.id
-      host = Rails.env.development? ? 'http://0.0.0.0:3000' : request.host
-      UserAction.create(user_id: current_user.id, room_id: @room.id, chapter_id: _chapter_id)
-      SendMsgJob.perform_later("#{host}/maze/room/#{@room.id}?chapter_id=#{_chapter_id}")
+      last_user_action = UserAction.last
+      if (room_id == 1 && !chapter_id && team.users.where.not(id: current_user.id).map(&:id).include?(last_user_action.user_id))
+        @room = Room.find_by(id: last_user_action.room_id)
+      end
+      
+      unless last_user_action.chapter_id == _chapter_id && last_user_action.room_id == room_id
+        if (!chapter_id && team.user_ids.include?(last_user_action.user_id))
+          # if (room_id = 1 && !chapter_id && team.user_ids.include?(last_user_action.user_id))
+          room = Room.find_by(id: last_user_action.room_id)
+          @room = room unless room.final
+        end
+        UserAction.create(user_id: current_user.id, room_id: @room.id, chapter_id: _chapter_id)
+        host = Rails.env.development? ? 'http://0.0.0.0:3000' : request.host
+        SendMsgJob.perform_now("#{host}/maze/room/#{@room.id}?chapter_id=#{_chapter_id}")
+      end
+      @available_rooms  = @room&.available_rooms.includes(:door)
+      ActionCable.server.remote_connections.where(current_user: current_user).disconnect if @room.final
     else
       redirect_to chapters_url, notice: 'No active chapter'
     end

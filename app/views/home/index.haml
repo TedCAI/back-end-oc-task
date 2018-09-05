@@ -1,3 +1,4 @@
+%p.notice #{notice}
 -if @active_chapter
   %h2 Currently active chapter: #{@active_chapter&.number}
   =link_to 'Start', "maze/room/1"
